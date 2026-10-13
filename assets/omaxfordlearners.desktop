@@ -1,0 +1,21 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Oxford Dictionary
+GenericName=Dictionary & Pronunciation
+Comment=Instant Oxford Learner's Dictionary lookups with UK/US audio
+Exec=omaxfordlearners %U
+Icon=omaxfordlearners
+Terminal=false
+Categories=Utility;Dictionary;TextTools;
+Keywords=dictionary;oxford;english;pronunciation;vocabulary;definition;lookup;omarchy;
+StartupNotify=true
+Actions=LookupClipboard;OpenBar;
+
+[Desktop Action LookupClipboard]
+Name=Look up Clipboard
+Exec=omaxfordlearners --clipboard
+
+[Desktop Action OpenBar]
+Name=Toggle Bar Panel
+Exec=omaxfordlearners --bar

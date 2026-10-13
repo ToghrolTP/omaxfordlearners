@@ -7,9 +7,11 @@
   "license": "MIT",
   "description": "Oxford Advanced Learner's Dictionary search, definitions, and native pronunciation in your Omarchy bar.",
   "kinds": [
+    "overlay",
     "bar-widget"
   ],
   "entryPoints": {
+    "overlay": "Overlay.qml",
     "barWidget": "BarWidget.qml"
   },
   "barWidget": {

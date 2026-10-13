@@ -1,0 +1,82 @@
+#!/bin/bash
+set -euo pipefail
+
+# omaxfordlearners launcher script
+# Dispatches word lookups and overlay toggles via Omarchy shell IPC
+
+PLUGIN_ID="toghroltp.omaxfordlearners"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." 2>/dev/null && pwd || true)"
+
+show_help() {
+  cat <<HELP
+Usage: omaxfordlearners [word | options]
+
+Oxford Learner's Dictionary Desktop & CLI Launcher for Omarchy
+
+Arguments:
+  [word]        Look up word in dictionary overlay / popup
+  --overlay     Toggle fullscreen modal overlay
+  --bar         Toggle bar popup panel
+  --cli <word>  Run terminal lookup and print JSON
+  -h, --help    Show this help message
+
+Examples:
+  omaxfordlearners
+  omaxfordlearners serendipity
+  omaxfordlearners --cli ephemeral
+HELP
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  show_help
+  exit 0
+fi
+
+# Terminal CLI mode
+if [[ "${1:-}" == "--cli" ]]; then
+  shift
+  LOOKUP_PY="$SCRIPT_DIR/oxford_lookup.py"
+  if [[ ! -f "$LOOKUP_PY" ]]; then
+    LOOKUP_PY="$HOME/.config/omarchy/plugins/$PLUGIN_ID/oxford_lookup.py"
+  fi
+  exec python3 "$LOOKUP_PY" "$@"
+fi
+
+# Clipboard lookup mode
+if [[ "${1:-}" == "--clipboard" ]]; then
+  CLIP="$(wl-paste --primary 2>/dev/null || wl-paste 2>/dev/null || true)"
+  if [[ -n "$CLIP" ]]; then
+    exec "$0" "$CLIP"
+  else
+    exec "$0"
+  fi
+fi
+
+# Direct word lookup
+if [[ -n "${1:-}" && "${1:-}" != "--overlay" && "${1:-}" != "--bar" ]]; then
+  WORD="$1"
+  # Try IPC to bar widget first if open
+  if omarchy-shell "$PLUGIN_ID" lookup "$WORD" >/dev/null 2>&1; then
+    exit 0
+  fi
+  # Try IPC to overlay
+  if omarchy-shell "${PLUGIN_ID}.overlay" lookup "$WORD" >/dev/null 2>&1; then
+    exit 0
+  fi
+  # Otherwise summon overlay
+  omarchy-shell shell summon "$PLUGIN_ID" "{\"word\":\"$WORD\"}" >/dev/null 2>&1 \
+    || omarchy-shell shell toggle "$PLUGIN_ID" '{}' >/dev/null 2>&1 || true
+  exit 0
+fi
+
+# Explicit bar widget toggle
+if [[ "${1:-}" == "--bar" ]]; then
+  omarchy-shell "$PLUGIN_ID" toggle >/dev/null 2>&1 || true
+  exit 0
+fi
+
+# Default (e.g. from Application Launcher like Rofi / Walker / Fuzzel):
+# Toggle overlay first; if not summoned, toggle bar widget
+if ! omarchy-shell shell toggle "$PLUGIN_ID" '{}' >/dev/null 2>&1; then
+  omarchy-shell "$PLUGIN_ID" toggle >/dev/null 2>&1 || true
+fi

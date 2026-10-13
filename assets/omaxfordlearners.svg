@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a192f"/>
+      <stop offset="50%" stop-color="#002147"/>
+      <stop offset="100%" stop-color="#1e3a8a"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="pageGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Base App Card -->
+  <rect x="16" y="16" width="224" height="224" rx="48" fill="url(#bgGrad)" filter="url(#shadow)"/>
+  <rect x="16" y="16" width="224" height="224" rx="48" fill="none" stroke="#38bdf8" stroke-width="2" stroke-opacity="0.25"/>
+
+  <!-- Bookmark Ribbon -->
+  <path d="M164 16 L164 88 L148 76 L132 88 L132 16 Z" fill="url(#goldGrad)" opacity="0.9"/>
+
+  <!-- Open Book Silhouette -->
+  <!-- Left Page -->
+  <path d="M48 168 C 76 160, 110 162, 124 176 L 124 94 C 110 80, 76 78, 48 86 Z" fill="url(#pageGrad)"/>
+  <!-- Right Page -->
+  <path d="M208 168 C 180 160, 146 162, 132 176 L 132 94 C 146 80, 180 78, 208 86 Z" fill="url(#pageGrad)"/>
+
+  <!-- Book Spine Center Divider -->
+  <line x1="128" y1="94" x2="128" y2="178" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Left Page Text Lines -->
+  <line x1="62" y1="104" x2="110" y2="100" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+  <line x1="62" y1="118" x2="110" y2="114" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+  <line x1="62" y1="132" x2="104" y2="128" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+  <line x1="62" y1="146" x2="96" y2="142" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Right Page Oxford Emblem Letter 'O' -->
+  <circle cx="170" cy="128" r="18" fill="none" stroke="url(#bgGrad)" stroke-width="6"/>
+  <circle cx="170" cy="128" r="7" fill="url(#goldGrad)"/>
+
+  <!-- Bottom Accent / Search Glow -->
+  <circle cx="128" cy="204" r="3" fill="#38bdf8" opacity="0.8"/>
+  <circle cx="116" cy="204" r="2" fill="#38bdf8" opacity="0.4"/>
+  <circle cx="140" cy="204" r="2" fill="#38bdf8" opacity="0.4"/>
+</svg>
