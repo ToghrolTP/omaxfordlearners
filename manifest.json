@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "id": "toghroltp.omaxfordlearners",
+  "name": "Oxford Dictionary",
+  "version": "1.0.0",
+  "author": "Toghrol",
+  "license": "MIT",
+  "description": "Oxford Advanced Learner's Dictionary search, definitions, and native pronunciation in your Omarchy bar.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Oxford Dictionary",
+    "description": "Instant Oxford dictionary lookups with UK/US audio and examples",
+    "category": "Education",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "autoPlayAudio": false,
+      "preferredAccent": "uk",
+      "cacheEnabled": true
+    },
+    "schema": [
+      {
+        "key": "preferredAccent",
+        "type": "enum",
+        "label": "Preferred Accent",
+        "options": ["uk", "us"],
+        "defaultValue": "uk",
+        "description": "Which accent to play by default."
+      },
+      {
+        "key": "autoPlayAudio",
+        "type": "boolean",
+        "label": "Auto-play Audio",
+        "defaultValue": false,
+        "description": "Automatically play pronunciation audio when a word is looked up."
+      },
+      {
+        "key": "cacheEnabled",
+        "type": "boolean",
+        "label": "Enable Cache",
+        "defaultValue": true,
+        "description": "Store results in ~/.cache/omaxfordlearners/ for instant recall."
+      }
+    ]
+  }
+}
