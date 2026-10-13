@@ -24,42 +24,53 @@ Look up English words, grammatical forms, definitions, real-world examples, and 
 
 ---
 
-## Installation
+---
 
-### Method 1: Local Plugin Directory (Recommended)
+## Installation & Setup
 
-Link or clone this repository into your Omarchy plugins directory:
+### Automatic Installation (Recommended)
+
+Run the included Omarchy installer script:
 
 ```bash
-mkdir -p ~/.config/omarchy/plugins
-ln -s ~/Documents/qml/omaxfordlearners ~/.config/omarchy/plugins/toghroltp.omaxfordlearners
+./install.sh
 ```
 
-Validate the plugin:
+This automated wizard:
+1. Verifies prerequisites (`python3`, `quickshell`, `omarchy`, `mpv`).
+2. Validates plugin manifest schema.
+3. Links the plugin into `~/.config/omarchy/plugins/toghroltp.omaxfordlearners`.
+4. Enables the Oxford Dictionary widget on the right side of the Omarchy status bar.
+5. Installs the desktop launcher entry (`omaxfordlearners.desktop`) and high-res vector icon so you can launch it from **Rofi, Walker, Fuzzel**, or the Omarchy application launcher.
+6. Installs the CLI runner command `~/.local/bin/omaxfordlearners`.
 
+To uninstall at any time:
 ```bash
-omarchy plugin validate ~/.config/omarchy/plugins/toghroltp.omaxfordlearners
-```
-
-Enable the widget in Omarchy:
-
-```bash
-omarchy plugin enable toghroltp.omaxfordlearners right
+./install.sh --uninstall
 ```
 
 ---
 
-## Hyprland Hotkeys
+## Accessing the Dictionary
 
-Add convenient shortcut bindings to your `~/.config/hypr/hyprland.conf`:
+- **Application Launcher**: Search for **"Oxford Dictionary"** in your launcher (Rofi / Walker / Fuzzel).
+- **Omarchy Bar Widget**: Click the book icon (**`󰏪`**) on your status bar.
+- **Hyprland Keybindings**: Add to `~/.config/hypr/hyprland.conf`:
+  ```ini
+  # Super + D toggles dictionary overlay
+  bind = $mainMod, D, exec, omaxfordlearners
 
-```ini
-# Toggle Oxford Dictionary popup
-bind = $mainMod, D, exec, omarchy shell msg toghroltp.omaxfordlearners toggle
+  # Super + Shift + D looks up highlighted text (clipboard selection)
+  bind = $mainMod SHIFT, D, exec, omaxfordlearners --clipboard
+  ```
+- **Terminal CLI**:
+  ```bash
+  # Launch overlay with a word query
+  omaxfordlearners serendipity
 
-# Look up selected text directly from primary selection (mouse highlight)
-bind = $mainMod SHIFT, D, exec, omarchy shell msg toghroltp.omaxfordlearners lookup "$(wl-paste --primary)"
-```
+  # Or print raw JSON directly in your terminal
+  omaxfordlearners --cli serendipity
+  ```
 
 ---
 
