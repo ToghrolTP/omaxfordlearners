@@ -1,3 +1,6 @@
 .vibe-wise/
 .developer-note/
 playground.py
+__pycache__/
+*.pyc
+tests/__pycache__/
