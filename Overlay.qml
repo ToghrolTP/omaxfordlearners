@@ -22,11 +22,11 @@ Item {
   property color scrim: Color.menu.scrim
   property var borderSpec: Border.surfaceSpec("menu", "border", border, Math.max(1, Style.space(2)))
   readonly property int cornerRadius: Style.cornerRadius
-  readonly property int contentMargin: Style.spacing.panelPadding
+  readonly property int contentMargin: Math.max(Style.space(22), Style.spacing.panelPadding)
 
   readonly property string pluginId: (root.manifest && root.manifest.id) || "toghroltp.omaxfordlearners"
-  readonly property int cardWidth: Math.min(Style.space(540), panelWindow.width - Style.gapsOut * 2)
-  readonly property int cardHeight: Math.min(Style.space(620), panelWindow.height - Style.gapsOut * 2)
+  readonly property int cardWidth: Math.min(Style.space(620), panelWindow.width - Style.gapsOut * 4)
+  readonly property int cardHeight: Math.min(Style.space(680), panelWindow.height - Style.gapsOut * 4)
 
   function open(params) {
     root.opened = true
@@ -121,6 +121,8 @@ Item {
       color: root.background
       borderSpec: root.borderSpec
       padding: root.contentMargin
+      focus: true
+      Keys.onEscapePressed: root.dismiss()
 
       // Prevent clicks inside card from propagating to backdrop
       MouseArea {
@@ -131,11 +133,15 @@ Item {
       DictionaryContent {
         id: dictContent
         anchors.fill: parent
+        anchors.topMargin: card.contentTopInset
+        anchors.rightMargin: card.contentRightInset
+        anchors.bottomMargin: card.contentBottomInset
+        anchors.leftMargin: card.contentLeftInset
         service: dictionaryService
         foreground: root.foreground
         accentColor: Color.accent
         fontFamily: root.fontFamily
-        maxFlickHeight: card.height - root.contentMargin * 2 - Style.space(90)
+        maxFlickHeight: card.height - card.contentTopInset - card.contentBottomInset - Style.space(90)
         onCloseRequested: root.dismiss()
       }
     }

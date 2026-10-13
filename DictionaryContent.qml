@@ -30,12 +30,12 @@ Column {
     searchInput.selectAll()
   }
 
-  spacing: Style.space(8)
+  spacing: Style.space(12)
 
   // ------------------------------------------------------------- Search Row
   RowLayout {
     width: parent.width
-    spacing: Style.space(6)
+    spacing: Style.space(8)
 
     TextField {
       id: searchInput
@@ -43,6 +43,8 @@ Column {
       placeholderText: "Search Oxford dictionary..."
       font.pixelSize: Style.font.body
       font.family: root.fontFamily
+      horizontalPadding: Style.space(12)
+      verticalPadding: Style.space(8)
 
       onAccepted: {
         if (text.trim() !== "") {
@@ -72,6 +74,8 @@ Column {
       visible: searchInput.text.length > 0
       iconText: Model.GLYPH_CLEAR
       tooltipText: "Clear"
+      horizontalPadding: Style.space(8)
+      verticalPadding: Style.space(8)
       onClicked: {
         searchInput.text = ""
         if (service) {
@@ -88,6 +92,8 @@ Column {
       text: ""
       tooltipText: "Search"
       accent: root.accentColor
+      horizontalPadding: Style.space(10)
+      verticalPadding: Style.space(8)
       onClicked: {
         if (searchInput.text.trim() !== "") {
           root.searchWord(searchInput.text.trim())
@@ -99,8 +105,8 @@ Column {
   // ------------------------------------------------------------- Recent Searches
   Flow {
     width: parent.width
-    spacing: Style.space(4)
-    visible: service && service.recentWords && service.recentWords.length > 0 && (!service.currentResult || !service.currentResult.found)
+    spacing: Style.space(6)
+    visible: Boolean(service && service.recentWords && service.recentWords.length > 0 && (!service.currentResult || !service.currentResult.found))
 
     Text {
       text: "Recent:"
@@ -108,6 +114,7 @@ Column {
       font.family: root.fontFamily
       font.pixelSize: Style.font.caption
       topPadding: Style.space(4)
+      rightPadding: Style.space(4)
     }
 
     Repeater {
@@ -116,8 +123,9 @@ Column {
       Button {
         text: modelData
         fontSize: Style.font.caption
-        horizontalPadding: Style.space(6)
-        verticalPadding: Style.space(2)
+        horizontalPadding: Style.space(8)
+        verticalPadding: Style.space(3)
+        bordered: true
         onClicked: root.searchWord(modelData)
       }
     }
@@ -142,7 +150,7 @@ Column {
 
     Column {
       id: resultsColumn
-      width: parent.width
+      width: parent.width - Style.space(6)
       spacing: Style.space(10)
 
       // --------------------------------- State 1: Loading
@@ -227,29 +235,31 @@ Column {
       // --------------------------------- State 3: Word Found
       Column {
         width: parent.width
-        spacing: Style.space(8)
-        visible: service && !service.loading && service.currentResult && service.currentResult.found
+        spacing: Style.space(14)
+        visible: Boolean(service && !service.loading && service.currentResult && service.currentResult.found)
 
         // Headword & Part of Speech
         Row {
           width: parent.width
-          spacing: Style.space(8)
+          spacing: Style.space(12)
 
           Text {
-            text: (service.currentResult && service.currentResult.term) || ""
+            text: (service && service.currentResult && service.currentResult.term) || ""
             color: root.foreground
             font.family: root.fontFamily
-            font.pixelSize: Math.round(Style.font.body * 1.5)
+            font.pixelSize: Math.round(Style.font.title * 1.25)
             font.bold: true
             anchors.verticalCenter: parent.verticalCenter
           }
 
           Rectangle {
             visible: Boolean(service && service.currentResult && service.currentResult.pos && service.currentResult.pos !== "unknown")
-            height: Style.space(20)
-            width: posText.implicitWidth + Style.space(12)
+            height: Style.space(22)
+            width: posText.implicitWidth + Style.space(16)
             radius: Style.cornerRadius
-            color: Qt.rgba(root.accentColor.r, root.accentColor.g, root.accentColor.b, 0.18)
+            color: Qt.rgba(root.accentColor.r, root.accentColor.g, root.accentColor.b, 0.15)
+            border.width: 1
+            border.color: Qt.rgba(root.accentColor.r, root.accentColor.g, root.accentColor.b, 0.3)
             anchors.verticalCenter: parent.verticalCenter
 
             Text {
@@ -266,20 +276,21 @@ Column {
 
         // Pronunciation Audio & Phonetics
         Row {
-          spacing: Style.space(10)
+          spacing: Style.space(18)
           visible: Boolean(service && service.currentResult && service.currentResult.pronunciation)
 
           // UK Pronunciation
           Row {
-            spacing: Style.space(4)
+            spacing: Style.space(8)
             visible: Boolean(service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.uk && (service.currentResult.pronunciation.uk.phonetic || service.currentResult.pronunciation.uk.audio))
 
             Button {
               iconText: Model.GLYPH_AUDIO
               text: "UK"
               fontSize: Style.font.caption
-              horizontalPadding: Style.space(6)
-              verticalPadding: Style.space(2)
+              horizontalPadding: Style.space(8)
+              verticalPadding: Style.space(4)
+              bordered: true
               enabled: Boolean(service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.uk && service.currentResult.pronunciation.uk.audio)
               onClicked: {
                 if (service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.uk && service.currentResult.pronunciation.uk.audio) {
@@ -299,15 +310,16 @@ Column {
 
           // US Pronunciation
           Row {
-            spacing: Style.space(4)
+            spacing: Style.space(8)
             visible: Boolean(service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.us && (service.currentResult.pronunciation.us.phonetic || service.currentResult.pronunciation.us.audio))
 
             Button {
               iconText: Model.GLYPH_AUDIO
               text: "US"
               fontSize: Style.font.caption
-              horizontalPadding: Style.space(6)
-              verticalPadding: Style.space(2)
+              horizontalPadding: Style.space(8)
+              verticalPadding: Style.space(4)
+              bordered: true
               enabled: Boolean(service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.us && service.currentResult.pronunciation.us.audio)
               onClicked: {
                 if (service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.us && service.currentResult.pronunciation.us.audio) {
@@ -333,42 +345,50 @@ Column {
         // Senses List
         Column {
           width: parent.width
-          spacing: Style.space(10)
+          spacing: Style.space(16)
 
           Repeater {
-            model: (service.currentResult && service.currentResult.senses) ? service.currentResult.senses : []
+            model: (service && service.currentResult && service.currentResult.senses) ? service.currentResult.senses : []
 
             Column {
               width: parent.width
-              spacing: Style.space(4)
+              spacing: Style.space(8)
 
               // Definition Header & Grammar
               RowLayout {
                 width: parent.width
-                spacing: Style.space(6)
+                spacing: Style.space(8)
 
-                Text {
-                  text: (index + 1) + "."
-                  color: root.accentColor
-                  font.family: root.fontFamily
-                  font.pixelSize: Style.font.body
-                  font.bold: true
+                Rectangle {
+                  Layout.preferredWidth: Style.space(22)
+                  Layout.preferredHeight: Style.space(22)
                   Layout.alignment: Qt.AlignTop
+                  radius: Style.cornerRadius
+                  color: Qt.rgba(root.accentColor.r, root.accentColor.g, root.accentColor.b, 0.12)
+
+                  Text {
+                    anchors.centerIn: parent
+                    text: String(index + 1)
+                    color: root.accentColor
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.caption
+                    font.bold: true
+                  }
                 }
 
                 Rectangle {
                   visible: Boolean(modelData.grammar)
-                  Layout.preferredHeight: Style.space(18)
-                  Layout.preferredWidth: gramText.implicitWidth + Style.space(8)
+                  Layout.preferredHeight: Style.space(20)
+                  Layout.preferredWidth: gramText.implicitWidth + Style.space(12)
                   Layout.alignment: Qt.AlignTop
-                  radius: Math.max(1, Style.cornerRadius / 2)
+                  radius: Style.cornerRadius
                   color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.08)
 
                   Text {
                     id: gramText
                     anchors.centerIn: parent
                     text: modelData.grammar || ""
-                    color: Qt.darker(root.foreground, 1.3)
+                    color: Qt.darker(root.foreground, 1.25)
                     font.family: root.fontFamily
                     font.pixelSize: Style.font.caption
                   }
@@ -381,6 +401,7 @@ Column {
                   color: root.foreground
                   font.family: root.fontFamily
                   font.pixelSize: Style.font.body
+                  lineHeight: 1.25
                   wrapMode: Text.Wrap
                 }
               }
@@ -388,30 +409,32 @@ Column {
               // Examples
               Column {
                 width: parent.width
-                spacing: Style.space(3)
-                leftPadding: Style.space(16)
-                visible: modelData.examples && modelData.examples.length > 0
+                spacing: Style.space(6)
+                leftPadding: Style.space(30)
+                visible: Boolean(modelData.examples && modelData.examples.length > 0)
 
                 Repeater {
                   model: modelData.examples || []
 
-                  Row {
+                  RowLayout {
                     width: parent.width
-                    spacing: Style.space(6)
+                    spacing: Style.space(8)
 
                     Rectangle {
-                      width: 2
-                      height: parent.height
-                      color: Qt.rgba(root.accentColor.r, root.accentColor.g, root.accentColor.b, 0.45)
+                      Layout.preferredWidth: Style.space(2)
+                      Layout.fillHeight: true
+                      radius: 1
+                      color: Qt.rgba(root.accentColor.r, root.accentColor.g, root.accentColor.b, 0.5)
                     }
 
                     Text {
-                      width: parent.width - Style.space(12)
-                      text: "\"" + modelData + "\""
-                      color: Qt.darker(root.foreground, 1.2)
+                      Layout.fillWidth: true
+                      text: "“" + modelData + "”"
+                      color: Qt.darker(root.foreground, 1.25)
                       font.family: root.fontFamily
                       font.pixelSize: Style.font.caption
                       font.italic: true
+                      lineHeight: 1.2
                       wrapMode: Text.Wrap
                     }
                   }
@@ -424,7 +447,7 @@ Column {
         // Word Origin Card
         Column {
           width: parent.width
-          spacing: Style.space(4)
+          spacing: Style.space(8)
           visible: Boolean(service && service.currentResult && service.currentResult.word_origin)
 
           PanelSeparator {
@@ -432,12 +455,13 @@ Column {
           }
 
           Row {
-            spacing: Style.space(6)
+            spacing: Style.space(8)
             Text {
               text: Model.GLYPH_ORIGIN
               color: root.accentColor
               font.family: root.fontFamily
               font.pixelSize: Style.font.body
+              anchors.verticalCenter: parent.verticalCenter
             }
             Text {
               text: "Word Origin"
@@ -445,24 +469,35 @@ Column {
               font.family: root.fontFamily
               font.pixelSize: Style.font.body
               font.bold: true
+              anchors.verticalCenter: parent.verticalCenter
             }
           }
 
           BorderSurface {
             width: parent.width
-            padding: Style.space(8)
+            implicitHeight: originText.implicitHeight + Style.space(20)
+            height: implicitHeight
             radius: Style.cornerRadius
             color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.05)
+            borderSpec: Border.controlSpec("normal", root.foreground, root.accentColor)
 
             Text {
-              width: parent.width
-              text: (service.currentResult && service.currentResult.word_origin) || ""
+              id: originText
+              anchors.fill: parent
+              anchors.margins: Style.space(10)
+              text: (service && service.currentResult && service.currentResult.word_origin) || ""
               color: Qt.darker(root.foreground, 1.2)
               font.family: root.fontFamily
               font.pixelSize: Style.font.caption
+              lineHeight: 1.25
               wrapMode: Text.Wrap
             }
           }
+        }
+
+        Item {
+          width: 1
+          height: Style.space(20)
         }
       }
 
