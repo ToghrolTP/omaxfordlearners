@@ -15,7 +15,10 @@ Item {
   property var recentWords: []
   property int lookupSeq: 0
 
-  readonly property string scriptPath: String(Qt.resolvedUrl("oxford_lookup.py")).replace(/^file:\/\//, "")
+  readonly property string scriptPath: {
+    var raw = String(Qt.resolvedUrl("oxford_lookup.py") || "")
+    return decodeURIComponent(raw.replace(/^file:\/\//, ""))
+  }
 
   signal lookupFinished(var result)
 
@@ -33,6 +36,7 @@ Item {
     lookupSeq++
     loading = true
     error = ""
+    currentResult = null
 
     // Add to recentWords if not already there
     var list = root.recentWords.slice()
@@ -48,6 +52,7 @@ Item {
     }
 
     lookupProcess.running = false
+    lookupProcess.seq = lookupSeq
     lookupProcess.command = args
     lookupProcess.running = true
   }
@@ -60,12 +65,19 @@ Item {
     property int seq: 0
 
     stdout: StdioCollector {
+      id: stdoutCollector
       waitForEnd: true
-      onStreamFinished: function(text) {
+      onStreamFinished: {
         if (lookupProcess.seq !== root.lookupSeq) return
         root.loading = false
+        var raw = String(stdoutCollector.text || "").trim()
+        if (!raw) {
+          root.error = "No response from lookup script"
+          root.currentResult = null
+          return
+        }
         try {
-          var parsed = JSON.parse(text)
+          var parsed = JSON.parse(raw)
           root.currentResult = parsed
           if (!parsed.found) {
             root.error = parsed.error || "Word not found"
@@ -79,6 +91,7 @@ Item {
           }
           root.lookupFinished(parsed)
         } catch (e) {
+          console.warn("[omaxfordlearners] JSON parse error: " + e + " text: " + raw)
           root.error = "Failed to parse dictionary response"
           root.currentResult = null
         }
@@ -86,11 +99,13 @@ Item {
     }
 
     stderr: StdioCollector {
+      id: stderrCollector
       waitForEnd: true
-      onStreamFinished: function(text) {
+      onStreamFinished: {
         if (lookupProcess.seq !== root.lookupSeq) return
-        if (text && text.trim() !== "") {
-          console.warn("[omaxfordlearners] Python error: " + text.trim())
+        var err = String(stderrCollector.text || "").trim()
+        if (err !== "") {
+          console.warn("[omaxfordlearners] Python error: " + err)
         }
       }
     }

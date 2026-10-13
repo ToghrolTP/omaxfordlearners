@@ -11,6 +11,7 @@ var GLYPH_LIGHTBULB = "󰌵";
 var GLYPH_ORIGIN = "󰦪";
 var GLYPH_ARROW_RIGHT = "󰁔";
 var GLYPH_CHECK = "󰄬";
+var GLYPH_WARN = "󰀦";
 
 function formatPos(pos) {
   if (!pos) return "";

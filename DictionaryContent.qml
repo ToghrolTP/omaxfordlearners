@@ -50,6 +50,20 @@ Column {
         }
       }
 
+      Keys.onReturnPressed: function(event) {
+        if (text.trim() !== "") {
+          root.searchWord(text.trim())
+          event.accepted = true
+        }
+      }
+
+      Keys.onEnterPressed: function(event) {
+        if (text.trim() !== "") {
+          root.searchWord(text.trim())
+          event.accepted = true
+        }
+      }
+
       Keys.onEscapePressed: root.closeRequested()
     }
 
@@ -60,6 +74,10 @@ Column {
       tooltipText: "Clear"
       onClicked: {
         searchInput.text = ""
+        if (service) {
+          service.currentResult = null
+          service.error = ""
+        }
         searchInput.forceActiveFocus()
       }
     }
@@ -179,7 +197,7 @@ Column {
         }
 
         Text {
-          visible: service.currentResult && service.currentResult.suggestions && service.currentResult.suggestions.length > 0
+          visible: Boolean(service && service.currentResult && service.currentResult.suggestions && service.currentResult.suggestions.length > 0)
           text: "Did you mean:"
           color: Qt.darker(root.foreground, 1.3)
           font.family: root.fontFamily
@@ -189,7 +207,7 @@ Column {
         Flow {
           width: parent.width
           spacing: Style.space(6)
-          visible: service.currentResult && service.currentResult.suggestions && service.currentResult.suggestions.length > 0
+          visible: Boolean(service && service.currentResult && service.currentResult.suggestions && service.currentResult.suggestions.length > 0)
 
           Repeater {
             model: (service.currentResult && service.currentResult.suggestions) ? service.currentResult.suggestions : []
@@ -227,7 +245,7 @@ Column {
           }
 
           Rectangle {
-            visible: service.currentResult && service.currentResult.pos && service.currentResult.pos !== "unknown"
+            visible: Boolean(service && service.currentResult && service.currentResult.pos && service.currentResult.pos !== "unknown")
             height: Style.space(20)
             width: posText.implicitWidth + Style.space(12)
             radius: Style.cornerRadius
@@ -249,12 +267,12 @@ Column {
         // Pronunciation Audio & Phonetics
         Row {
           spacing: Style.space(10)
-          visible: service.currentResult && service.currentResult.pronunciation
+          visible: Boolean(service && service.currentResult && service.currentResult.pronunciation)
 
           // UK Pronunciation
           Row {
             spacing: Style.space(4)
-            visible: service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.uk && (service.currentResult.pronunciation.uk.phonetic || service.currentResult.pronunciation.uk.audio)
+            visible: Boolean(service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.uk && (service.currentResult.pronunciation.uk.phonetic || service.currentResult.pronunciation.uk.audio))
 
             Button {
               iconText: Model.GLYPH_AUDIO
@@ -262,16 +280,16 @@ Column {
               fontSize: Style.font.caption
               horizontalPadding: Style.space(6)
               verticalPadding: Style.space(2)
-              enabled: service.currentResult && service.currentResult.pronunciation.uk && !!service.currentResult.pronunciation.uk.audio
+              enabled: Boolean(service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.uk && service.currentResult.pronunciation.uk.audio)
               onClicked: {
-                if (service && service.currentResult.pronunciation.uk.audio) {
+                if (service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.uk && service.currentResult.pronunciation.uk.audio) {
                   service.playAudio(service.currentResult.pronunciation.uk.audio)
                 }
               }
             }
 
             Text {
-              text: (service.currentResult && service.currentResult.pronunciation.uk && service.currentResult.pronunciation.uk.phonetic) || ""
+              text: (service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.uk && service.currentResult.pronunciation.uk.phonetic) || ""
               color: Qt.darker(root.foreground, 1.25)
               font.family: root.fontFamily
               font.pixelSize: Style.font.body
@@ -282,7 +300,7 @@ Column {
           // US Pronunciation
           Row {
             spacing: Style.space(4)
-            visible: service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.us && (service.currentResult.pronunciation.us.phonetic || service.currentResult.pronunciation.us.audio)
+            visible: Boolean(service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.us && (service.currentResult.pronunciation.us.phonetic || service.currentResult.pronunciation.us.audio))
 
             Button {
               iconText: Model.GLYPH_AUDIO
@@ -290,16 +308,16 @@ Column {
               fontSize: Style.font.caption
               horizontalPadding: Style.space(6)
               verticalPadding: Style.space(2)
-              enabled: service.currentResult && service.currentResult.pronunciation.us && !!service.currentResult.pronunciation.us.audio
+              enabled: Boolean(service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.us && service.currentResult.pronunciation.us.audio)
               onClicked: {
-                if (service && service.currentResult.pronunciation.us.audio) {
+                if (service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.us && service.currentResult.pronunciation.us.audio) {
                   service.playAudio(service.currentResult.pronunciation.us.audio)
                 }
               }
             }
 
             Text {
-              text: (service.currentResult && service.currentResult.pronunciation.us && service.currentResult.pronunciation.us.phonetic) || ""
+              text: (service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.us && service.currentResult.pronunciation.us.phonetic) || ""
               color: Qt.darker(root.foreground, 1.25)
               font.family: root.fontFamily
               font.pixelSize: Style.font.body
@@ -325,7 +343,7 @@ Column {
               spacing: Style.space(4)
 
               // Definition Header & Grammar
-              Row {
+              RowLayout {
                 width: parent.width
                 spacing: Style.space(6)
 
@@ -335,15 +353,16 @@ Column {
                   font.family: root.fontFamily
                   font.pixelSize: Style.font.body
                   font.bold: true
+                  Layout.alignment: Qt.AlignTop
                 }
 
                 Rectangle {
-                  visible: !!modelData.grammar
-                  height: Style.space(18)
-                  width: gramText.implicitWidth + Style.space(8)
+                  visible: Boolean(modelData.grammar)
+                  Layout.preferredHeight: Style.space(18)
+                  Layout.preferredWidth: gramText.implicitWidth + Style.space(8)
+                  Layout.alignment: Qt.AlignTop
                   radius: Math.max(1, Style.cornerRadius / 2)
                   color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.08)
-                  anchors.verticalCenter: parent.verticalCenter
 
                   Text {
                     id: gramText
@@ -356,7 +375,8 @@ Column {
                 }
 
                 Text {
-                  width: parent.width - Style.space(40)
+                  Layout.fillWidth: true
+                  Layout.alignment: Qt.AlignTop
                   text: modelData.definition || ""
                   color: root.foreground
                   font.family: root.fontFamily
@@ -405,7 +425,7 @@ Column {
         Column {
           width: parent.width
           spacing: Style.space(4)
-          visible: service.currentResult && !!service.currentResult.word_origin
+          visible: Boolean(service && service.currentResult && service.currentResult.word_origin)
 
           PanelSeparator {
             width: parent.width
@@ -446,11 +466,38 @@ Column {
         }
       }
 
-      // --------------------------------- State 4: Welcome / Idle Empty State
+      // --------------------------------- State 4: Error State
       Column {
         width: parent.width
         spacing: Style.space(10)
-        visible: service && !service.loading && !service.currentResult
+        visible: service && !service.loading && !service.currentResult && service.error !== ""
+
+        Item { height: Style.space(20); width: 1 }
+
+        Text {
+          anchors.horizontalCenter: parent.horizontalCenter
+          text: Model.GLYPH_WARN
+          font.family: root.fontFamily
+          font.pixelSize: Style.space(36)
+          color: Color.urgent
+        }
+
+        Text {
+          anchors.horizontalCenter: parent.horizontalCenter
+          text: service ? service.error : "Error"
+          font.family: root.fontFamily
+          font.pixelSize: Style.font.body
+          font.bold: true
+          color: Color.urgent
+          wrapMode: Text.Wrap
+        }
+      }
+
+      // --------------------------------- State 5: Welcome / Idle Empty State
+      Column {
+        width: parent.width
+        spacing: Style.space(10)
+        visible: service && !service.loading && !service.currentResult && (!service.error || service.error === "")
 
         Item { height: Style.space(20); width: 1 }
 
