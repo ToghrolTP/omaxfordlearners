@@ -4,9 +4,13 @@ import tempfile
 import os
 import shutil
 import json
+import sys
 from pathlib import Path
 
-# We will import from oxford_lookup
+# Ensure repo root is on sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+# Import from oxford_lookup
 import oxford_lookup
 
 

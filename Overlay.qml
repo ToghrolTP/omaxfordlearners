@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import qs.Commons
 import qs.Ui
@@ -24,11 +25,27 @@ Item {
   readonly property int contentMargin: Style.spacing.panelPadding
 
   readonly property string pluginId: (root.manifest && root.manifest.id) || "toghroltp.omaxfordlearners"
+  readonly property int cardWidth: Math.min(Style.space(540), panelWindow.width - Style.gapsOut * 2)
+  readonly property int cardHeight: Math.min(Style.space(620), panelWindow.height - Style.gapsOut * 2)
 
   function open(params) {
     root.opened = true
+    var word = ""
+    if (typeof params === "string" && params.trim() !== "" && params !== "{}") {
+      try {
+        var obj = JSON.parse(params)
+        if (obj && obj.word) word = String(obj.word).trim()
+      } catch (e) {
+        word = params.trim()
+      }
+    } else if (params && typeof params === "object" && params.word) {
+      word = String(params.word).trim()
+    }
     Qt.callLater(function() {
-      if (dictContent) dictContent.focusSearch()
+      if (dictContent) {
+        dictContent.focusSearch()
+        if (word) dictContent.searchWord(word)
+      }
     })
   }
 
@@ -97,8 +114,8 @@ Item {
     // Centered dictionary card
     BorderSurface {
       id: card
-      width: Math.min(parent.width - Style.space(40), Style.space(480))
-      height: Math.min(parent.height - Style.space(80), dictContent.implicitHeight + root.contentMargin * 2)
+      width: root.cardWidth
+      height: root.cardHeight
       radius: root.cornerRadius
       anchors.centerIn: parent
       color: root.background
@@ -118,7 +135,7 @@ Item {
         foreground: root.foreground
         accentColor: Color.accent
         fontFamily: root.fontFamily
-        maxFlickHeight: parent.height - Style.space(120)
+        maxFlickHeight: card.height - root.contentMargin * 2 - Style.space(90)
         onCloseRequested: root.dismiss()
       }
     }

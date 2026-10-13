@@ -15,7 +15,7 @@ Item {
   property var recentWords: []
   property int lookupSeq: 0
 
-  readonly property string scriptPath: Qt.resolvedUrl("oxford_lookup.py").replace("file://", "")
+  readonly property string scriptPath: String(Qt.resolvedUrl("oxford_lookup.py")).replace(/^file:\/\//, "")
 
   signal lookupFinished(var result)
 

@@ -10,6 +10,7 @@
     "overlay",
     "bar-widget"
   ],
+  "keepLoaded": true,
   "entryPoints": {
     "overlay": "Overlay.qml",
     "barWidget": "BarWidget.qml"

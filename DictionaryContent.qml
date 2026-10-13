@@ -89,7 +89,7 @@ Column {
       color: Qt.darker(root.foreground, 1.4)
       font.family: root.fontFamily
       font.pixelSize: Style.font.caption
-      anchors.verticalCenter: parent.verticalCenter
+      topPadding: Style.space(4)
     }
 
     Repeater {
@@ -430,8 +430,7 @@ Column {
 
           BorderSurface {
             width: parent.width
-            horizontalPadding: Style.space(8)
-            verticalPadding: Style.space(6)
+            padding: Style.space(8)
             radius: Style.cornerRadius
             color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.05)
 
