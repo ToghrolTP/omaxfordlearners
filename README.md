@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/omaxfordlearners.svg" alt="Oxford Dictionary Logo" width="128" height="128" />
+</p>
+
 # Oxford Learner's Dictionary (`omaxfordlearners`)
 
 [![Omarchy Plugin](https://img.shields.io/badge/Omarchy-Quattro%20Plugin-blue)](https://github.com/ToghrolTP/omaxfordlearners)

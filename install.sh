@@ -13,6 +13,7 @@ TARGET_DIR="${OMARCHY_PLUGINS_DIR}/${PLUGIN_ID}"
 BIN_DIR="${HOME}/.local/bin"
 DESKTOP_DIR="${HOME}/.local/share/applications"
 ICON_DIR="${HOME}/.local/share/icons/hicolor/scalable/apps"
+ICON_512_DIR="${HOME}/.local/share/icons/hicolor/512x512/apps"
 PIXMAP_DIR="${HOME}/.local/share/pixmaps"
 
 # Colors & Formatting
@@ -138,11 +139,16 @@ install_desktop_integration() {
   fi
 
   # 2. Application icon
-  mkdir -p "$ICON_DIR" "$PIXMAP_DIR"
+  mkdir -p "$ICON_DIR" "$ICON_512_DIR" "$PIXMAP_DIR"
   if [ -f "$PROJECT_DIR/assets/omaxfordlearners.svg" ]; then
     cp "$PROJECT_DIR/assets/omaxfordlearners.svg" "$ICON_DIR/omaxfordlearners.svg"
     cp "$PROJECT_DIR/assets/omaxfordlearners.svg" "$PIXMAP_DIR/omaxfordlearners.svg"
-    log_ok "Installed scalable icon to $ICON_DIR and $PIXMAP_DIR"
+    log_ok "Installed scalable SVG icon to $ICON_DIR and $PIXMAP_DIR"
+  fi
+  if [ -f "$PROJECT_DIR/assets/omaxfordlearners.png" ]; then
+    cp "$PROJECT_DIR/assets/omaxfordlearners.png" "$ICON_512_DIR/omaxfordlearners.png"
+    cp "$PROJECT_DIR/assets/omaxfordlearners.png" "$PIXMAP_DIR/omaxfordlearners.png"
+    log_ok "Installed 512x512 PNG icon to $ICON_512_DIR and $PIXMAP_DIR"
   fi
 
   # 3. Desktop Entry (.desktop file)
@@ -183,11 +189,17 @@ uninstall() {
   rm -f "$BIN_DIR/omaxfordlearners"
   rm -f "$DESKTOP_DIR/omaxfordlearners.desktop"
   rm -f "$ICON_DIR/omaxfordlearners.svg"
+  rm -f "$ICON_512_DIR/omaxfordlearners.png"
   rm -f "$PIXMAP_DIR/omaxfordlearners.svg"
-  log_ok "Removed launcher binary, desktop entry, and icon"
+  rm -f "$PIXMAP_DIR/omaxfordlearners.png"
+  log_ok "Removed launcher binary, desktop entry, and icons"
 
   if command -v update-desktop-database &>/dev/null; then
     update-desktop-database "$DESKTOP_DIR" 2>/dev/null || true
+  fi
+
+  if command -v gtk-update-icon-cache &>/dev/null; then
+    gtk-update-icon-cache -f -t "${HOME}/.local/share/icons/hicolor" 2>/dev/null || true
   fi
 
   echo -e "\n${GREEN}${BOLD}✓ Uninstallation complete!${RESET}\n"
