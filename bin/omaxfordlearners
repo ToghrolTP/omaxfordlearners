@@ -44,7 +44,15 @@ fi
 
 # Clipboard lookup mode
 if [[ "${1:-}" == "--clipboard" ]]; then
-  CLIP="$(wl-paste --primary 2>/dev/null || wl-paste 2>/dev/null || true)"
+  CLIP="$(wl-paste --no-newline --type text/plain 2>/dev/null || wl-paste --no-newline 2>/dev/null || true)"
+  # Reject binary or control characters
+  if printf '%s' "$CLIP" | LC_ALL=C grep -q '[^[:print:][:space:]]'; then
+    CLIP=""
+  fi
+  CLIP="$(printf '%s' "$CLIP" | head -n 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+  if [ ${#CLIP} -gt 64 ]; then
+    CLIP=""
+  fi
   if [[ -n "$CLIP" ]]; then
     exec "$0" "$CLIP"
   else
@@ -54,19 +62,28 @@ fi
 
 # Direct word lookup
 if [[ -n "${1:-}" && "${1:-}" != "--overlay" && "${1:-}" != "--bar" ]]; then
-  WORD="$1"
-  # Try IPC to bar widget first if open
-  if omarchy-shell "$PLUGIN_ID" lookup "$WORD" >/dev/null 2>&1; then
+  RAW_WORD="$1"
+  # Reject binary or control characters
+  if printf '%s' "$RAW_WORD" | LC_ALL=C grep -q '[^[:print:][:space:]]'; then
+    RAW_WORD=""
+  fi
+  WORD="$(printf '%s' "$RAW_WORD" | head -n 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | cut -c1-64)"
+
+  if [[ -n "$WORD" ]]; then
+    # Try IPC to bar widget first if open
+    if omarchy-shell "$PLUGIN_ID" lookup "$WORD" >/dev/null 2>&1; then
+      exit 0
+    fi
+    # Try IPC to overlay
+    if omarchy-shell "${PLUGIN_ID}.overlay" lookup "$WORD" >/dev/null 2>&1; then
+      exit 0
+    fi
+    # Otherwise summon overlay with safely formatted JSON
+    PAYLOAD="$(python3 -c 'import sys, json; print(json.dumps({"word": sys.argv[1]}))' "$WORD" 2>/dev/null || echo "{\"word\":\"$WORD\"}")"
+    omarchy-shell shell summon "$PLUGIN_ID" "$PAYLOAD" >/dev/null 2>&1 \
+      || omarchy-shell shell toggle "$PLUGIN_ID" '{}' >/dev/null 2>&1 || true
     exit 0
   fi
-  # Try IPC to overlay
-  if omarchy-shell "${PLUGIN_ID}.overlay" lookup "$WORD" >/dev/null 2>&1; then
-    exit 0
-  fi
-  # Otherwise summon overlay
-  omarchy-shell shell summon "$PLUGIN_ID" "{\"word\":\"$WORD\"}" >/dev/null 2>&1 \
-    || omarchy-shell shell toggle "$PLUGIN_ID" '{}' >/dev/null 2>&1 || true
-  exit 0
 fi
 
 # Explicit bar widget toggle

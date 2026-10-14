@@ -30,7 +30,43 @@ function formatPos(pos) {
   }
 }
 
+// Detect binary, control characters, or non-text garbage
+function isBinaryOrGarbage(text) {
+  if (!text) return true;
+  var s = String(text);
+  // Check for null bytes, unprintable control characters, or Unicode replacement char
+  if (/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\uFFFD]/.test(s)) return true;
+  // Common binary file signatures (PNG, GIF, PDF, ELF, ZIP)
+  if (/^(\x89PNG|GIF8|%PDF|\x7fELF|PK\x03\x04)/.test(s)) return true;
+  // If exceptionally long without whitespace, or overall too long for any dictionary term
+  if (s.length > 80) return true;
+  return false;
+}
+
 function cleanWord(text) {
   if (!text) return "";
-  return String(text).trim();
+  var s = String(text);
+  if (isBinaryOrGarbage(s)) return "";
+
+  // Replace newlines and tabs with spaces
+  s = s.replace(/[\r\n\t]+/g, " ");
+
+  // Strip leading and trailing quotes, brackets, and punctuation
+  s = s.replace(/^["'“‘\[\(\<]+|["'”’\]\)\>]+$/g, "");
+
+  // Collapse multiple spaces and trim
+  s = s.replace(/\s+/g, " ").trim();
+
+  // If length exceeds 64 characters, reject
+  if (s.length === 0 || s.length > 64) return "";
+
+  // Must contain at least one alphanumeric or accented character
+  if (!/[a-zA-Z0-9\u00C0-\u024F]/.test(s)) return "";
+
+  return s;
+}
+
+function isValidWord(text) {
+  var clean = cleanWord(text);
+  return clean.length > 0 && clean.length <= 64;
 }

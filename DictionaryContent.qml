@@ -20,7 +20,14 @@ Column {
 
   function searchWord(word) {
     var clean = Model.cleanWord(word)
-    if (!clean) return
+    if (!clean) {
+      if (service) {
+        service.loading = false
+        service.error = "Invalid search term (contains binary or unsupported characters)."
+        service.currentResult = null
+      }
+      return
+    }
     searchInput.text = clean
     if (service) service.lookup(clean)
   }
@@ -40,6 +47,7 @@ Column {
     TextField {
       id: searchInput
       Layout.fillWidth: true
+      maximumLength: 80
       placeholderText: "Search Oxford dictionary..."
       font.pixelSize: Style.font.body
       font.family: root.fontFamily
@@ -108,20 +116,38 @@ Column {
     spacing: Style.space(6)
     visible: Boolean(service && service.recentWords && service.recentWords.length > 0 && (!service.currentResult || !service.currentResult.found))
 
-    Text {
-      text: "Recent:"
-      color: Qt.darker(root.foreground, 1.4)
-      font.family: root.fontFamily
-      font.pixelSize: Style.font.caption
-      topPadding: Style.space(4)
-      rightPadding: Style.space(4)
+    Row {
+      spacing: Style.space(4)
+      topPadding: Style.space(2)
+
+      Text {
+        text: "Recent:"
+        color: Qt.darker(root.foreground, 1.4)
+        font.family: root.fontFamily
+        font.pixelSize: Style.font.caption
+        anchors.verticalCenter: parent.verticalCenter
+      }
+
+      Button {
+        iconText: Model.GLYPH_CLEAR
+        tooltipText: "Clear recent searches"
+        fontSize: Style.font.caption
+        horizontalPadding: Style.space(5)
+        verticalPadding: Style.space(2)
+        bordered: true
+        anchors.verticalCenter: parent.verticalCenter
+        onClicked: {
+          if (service) service.clearRecent()
+        }
+      }
     }
 
     Repeater {
       model: service ? service.recentWords : []
 
       Button {
-        text: modelData
+        text: modelData.length > 20 ? modelData.substring(0, 19) + "…" : modelData
+        tooltipText: modelData
         fontSize: Style.font.caption
         horizontalPadding: Style.space(8)
         verticalPadding: Style.space(3)

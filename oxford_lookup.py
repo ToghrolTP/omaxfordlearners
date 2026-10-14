@@ -209,11 +209,45 @@ def fetch_oxford_html(term):
         raise RuntimeError(f"Network error: {e}")
 
 
+def is_valid_term(term):
+    """Check if term is a plausible dictionary word and not binary or garbage."""
+    if not term or len(term) > 80:
+        return False
+    # Check for surrogates (e.g. invalid bytes decoded by surrogateescape)
+    if any(0xD800 <= ord(c) <= 0xDFFF for c in term):
+        return False
+    # Check for unprintable control characters, null bytes, or replacement chars
+    if any(ord(c) < 32 and c not in " \t" for c in term):
+        return False
+    if "\ufffd" in term or "\x00" in term:
+        return False
+    # Check common binary file signatures
+    if term.startswith(("\x89PNG", "GIF8", "%PDF", "\x7fELF", "PK\x03\x04")):
+        return False
+    # Must contain at least one alphanumeric or word character
+    if not re.search(r"\w", term):
+        return False
+    return True
+
+
 def lookup_word(term, use_cache=True, cache_dir=None):
     """Main lookup coordinator: checks cache, fetches HTML, parses, and saves cache."""
     term = term.strip()
     if not term:
         return {"found": False, "term": "", "error": "No word provided."}
+
+    if not is_valid_term(term):
+        preview = term[:24] + ("…" if len(term) > 24 else "")
+        safe_preview = "".join(
+            c if (32 <= ord(c) < 0xD800 or 0xDFFF < ord(c) <= 0x10FFFF) else "?"
+            for c in preview
+        )
+        return {
+            "found": False,
+            "term": safe_preview,
+            "error": "Invalid search term (contains binary or unsupported characters).",
+            "suggestions": []
+        }
 
     cache_file = get_cache_path(term, cache_dir)
     if use_cache:
@@ -275,7 +309,10 @@ def main():
     payload = lookup_word(args.word, use_cache=not args.no_cache, cache_dir=args.cache_dir)
 
     # Print JSON output to stdout
-    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    try:
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+    except Exception:
+        print(json.dumps(payload, ensure_ascii=True, indent=2))
 
     # Optional audio playback
     if payload.get("found"):

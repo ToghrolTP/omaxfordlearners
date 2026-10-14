@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "Model.js" as Model
 
 Item {
   id: root
@@ -29,17 +30,26 @@ Item {
     audioProcess.running = true
   }
 
+  function clearRecent() {
+    root.recentWords = []
+  }
+
   function lookup(term) {
-    var cleanTerm = String(term || "").trim()
-    if (!cleanTerm) return
+    var cleanTerm = Model.cleanWord(term)
+    if (!cleanTerm || !Model.isValidWord(cleanTerm)) {
+      root.loading = false
+      root.error = "Invalid search term (contains binary or unsupported characters)."
+      root.currentResult = null
+      return
+    }
 
     lookupSeq++
     loading = true
     error = ""
     currentResult = null
 
-    // Add to recentWords if not already there
-    var list = root.recentWords.slice()
+    // Purge any invalid entries and add clean word to recentWords
+    var list = root.recentWords.filter(function(w) { return Model.isValidWord(w) })
     var idx = list.indexOf(cleanTerm)
     if (idx !== -1) list.splice(idx, 1)
     list.unshift(cleanTerm)

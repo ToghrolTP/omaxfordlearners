@@ -107,6 +107,28 @@ class TestOxfordLookup(unittest.TestCase):
         self.assertEqual(loaded["term"], "test")
         self.assertTrue(loaded["found"])
 
+    def test_is_valid_term(self):
+        # Valid terms
+        self.assertTrue(oxford_lookup.is_valid_term("serendipity"))
+        self.assertTrue(oxford_lookup.is_valid_term("take off"))
+        self.assertTrue(oxford_lookup.is_valid_term("mother-in-law"))
+        self.assertTrue(oxford_lookup.is_valid_term("café"))
+
+        # Invalid terms
+        self.assertFalse(oxford_lookup.is_valid_term(""))
+        self.assertFalse(oxford_lookup.is_valid_term("\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"))
+        self.assertFalse(oxford_lookup.is_valid_term("hello\x00world"))
+        self.assertFalse(oxford_lookup.is_valid_term("a" * 101))
+        self.assertFalse(oxford_lookup.is_valid_term("---"))
+        self.assertFalse(oxford_lookup.is_valid_term("line1\nline2"))
+
+    def test_lookup_word_binary_and_invalid(self):
+        binary_data = "\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x04\x00"
+        result = oxford_lookup.lookup_word(binary_data, use_cache=True, cache_dir=self.test_dir)
+        self.assertFalse(result["found"])
+        self.assertIn("Invalid search term", result["error"])
+        self.assertEqual(result["suggestions"], [])
+
 
 if __name__ == "__main__":
     unittest.main()
