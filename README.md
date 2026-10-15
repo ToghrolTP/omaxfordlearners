@@ -5,12 +5,32 @@
 # Oxford Learner's Dictionary (`omaxfordlearners`)
 
 [![Omarchy Plugin](https://img.shields.io/badge/Omarchy-Quattro%20Plugin-blue)](https://github.com/ToghrolTP/omaxfordlearners)
+[![Marketplace](https://img.shields.io/badge/Omarchy_Marketplace-ready-brightgreen)](https://plugins.omarchy.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
 
-An authentic, native Oxford Advanced Learner's Dictionary (OALD) desktop plugin for the **Omarchy shell** (Quickshell / Hyprland).
+An authentic, native Oxford Advanced Learner's Dictionary (OALD) desktop and bar plugin for the **Omarchy shell** (Quickshell / Hyprland).
 
 Look up English words, grammatical forms, definitions, real-world examples, and word origins, and listen to authentic British (UK) and American (US) native pronunciations with a single click from your Omarchy bar or a global hotkey.
+
+---
+
+## Previews
+
+<p align="center">
+  <img src="preview.png" alt="Oxford Dictionary for Omarchy Preview" width="800" />
+</p>
+
+<table align="center">
+  <tr>
+    <td align="center"><b>Comprehensive Word Senses ("run")</b></td>
+    <td align="center"><b>Etymology & Grammar ("superficiality")</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/screenshots/preview_run.png" alt="Oxford Dictionary definition view for run" width="380" /></td>
+    <td align="center"><img src="assets/screenshots/preview_superficiality.png" alt="Oxford Dictionary definition view for superficiality" width="380" /></td>
+  </tr>
+</table>
 
 ---
 
@@ -22,43 +42,63 @@ Look up English words, grammatical forms, definitions, real-world examples, and 
 - **Word Origin & Etymology**: Historical origins and etymology cards.
 - **Intelligent "Did You Mean" Suggestions**: When a word is misspelled or not found, provides interactive suggestion badges you can click to search instantly.
 - **Ultra-Fast Local Caching**: Automatic persistent caching in `~/.cache/omaxfordlearners/` — repeated lookups resolve in milliseconds (~0ms latency) and are available offline.
+- **Input & Clipboard Sanitization**: Built-in protection against binary data, control characters, or oversized clipboard buffers.
 - **60fps Fluid & Non-Blocking**: Network requests and audio streaming run out-of-process via Quickshell's asynchronous `Process` APIs, keeping the shell UI perfectly smooth.
-- **Native Omarchy Design**: Built using Omarchy Quattro tokens (`qs.Commons.Style`, `qs.Commons.Color`, `qs.Ui.KeyboardPanel`) to automatically inherit any active Omarchy theme.
+- **Native Omarchy Design**: Built using Omarchy Quattro tokens (`qs.Commons.Style`, `qs.Commons.Color`, `qs.Ui.KeyboardPanel`, `BorderSurface`) to automatically inherit any active Omarchy theme.
 - **Desktop & CLI Friendly**: Includes full IPC support for global Hyprland keybindings, as well as a standalone CLI tool (`oxford_lookup.py`).
-
----
 
 ---
 
 ## Installation & Setup
 
-### Automatic Installation (Recommended)
+### 1. Via Omarchy Shell Plugin Manager (Marketplace Standard)
 
-Run the included Omarchy installer script:
+Install and enable the plugin directly into your Omarchy bar in one command:
 
 ```bash
+omarchy plugin add https://github.com/ToghrolTP/omaxfordlearners.git --enable
+```
+
+To remove at any time:
+```bash
+omarchy plugin remove toghroltp.omaxfordlearners
+```
+
+---
+
+### 2. Desktop Launcher & App Menu Integration (Optional)
+
+To also integrate Oxford Dictionary into your system application launchers (**Rofi, Walker, Fuzzel**) and install the standalone `omaxfordlearners` command into `~/.local/bin`:
+
+```bash
+# Clone and run the installer
+git clone https://github.com/ToghrolTP/omaxfordlearners.git
+cd omaxfordlearners
 ./install.sh
 ```
 
-This automated wizard:
-1. Verifies prerequisites (`python3`, `quickshell`, `omarchy`, `mpv`).
-2. Validates plugin manifest schema.
-3. Links the plugin into `~/.config/omarchy/plugins/toghroltp.omaxfordlearners`.
-4. Enables the Oxford Dictionary widget on the right side of the Omarchy status bar.
-5. Installs the desktop launcher entry (`omaxfordlearners.desktop`) and high-res vector icon so you can launch it from **Rofi, Walker, Fuzzel**, or the Omarchy application launcher.
-6. Installs the CLI runner command `~/.local/bin/omaxfordlearners`.
-
-To uninstall at any time:
+To uninstall desktop entries, binaries, and icons:
 ```bash
 ./install.sh --uninstall
 ```
 
 ---
 
+## System Requirements & Security
+
+- **Python 3** (`python3`): Pre-installed on Arch Linux / Omarchy.
+- **mpv** (`mpv`): Recommended for native audio pronunciation playback. Install with your distribution's package manager (e.g. `pacman -S mpv`).
+- **Quickshell & Omarchy Shell**: Standard desktop environment.
+
+> [!NOTE]
+> **No Root Privileges Required**: No `sudo` or `pkexec` permissions are required to install, run, or remove this plugin. All network requests and cached data operate strictly within standard user space (`~/.cache/omaxfordlearners/`).
+
+---
+
 ## Accessing the Dictionary
 
+- **Omarchy Bar Widget**: Click the book icon (**`󰏪`**) on your status bar to open the lookup popup.
 - **Application Launcher**: Search for **"Oxford Dictionary"** in your launcher (Rofi / Walker / Fuzzel).
-- **Omarchy Bar Widget**: Click the book icon (**`󰏪`**) on your status bar.
 - **Hyprland Keybindings**: Add to `~/.config/hypr/hyprland.conf`:
   ```ini
   # Super + D toggles dictionary overlay
@@ -142,7 +182,7 @@ python3 -m unittest discover tests -v
 Validate QML syntax and imports:
 
 ```bash
-qmllint -I /usr/share/omarchy/shell BarWidget.qml DictionaryService.qml Panel.qml
+qmllint -I /usr/share/omarchy/shell *.qml
 ```
 
 Validate Omarchy plugin manifest:
