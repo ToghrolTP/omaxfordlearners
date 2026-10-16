@@ -71,9 +71,8 @@ omarchy plugin remove toghroltp.omaxfordlearners
 To also integrate Oxford Dictionary into your system application launchers (**Rofi, Walker, Fuzzel**) and install the standalone `omaxfordlearners` command into `~/.local/bin`:
 
 ```bash
-# Clone and run the installer
-git clone https://github.com/ToghrolTP/omaxfordlearners.git
-cd omaxfordlearners
+# Run the installer from your plugin directory:
+cd ~/.config/omarchy/plugins/omaxfordlearners
 ./install.sh
 ```
 
@@ -87,11 +86,11 @@ To uninstall desktop entries, binaries, and icons:
 ## System Requirements & Security
 
 - **Python 3** (`python3`): Pre-installed on Arch Linux / Omarchy.
-- **mpv** (`mpv`): Recommended for native audio pronunciation playback. Install with your distribution's package manager (e.g. `pacman -S mpv`).
+- **mpv** (`mpv`): Recommended for native audio pronunciation playback (available via system packages `mpv`).
 - **Quickshell & Omarchy Shell**: Standard desktop environment.
 
 > [!NOTE]
-> **No Root Privileges Required**: No `sudo` or `pkexec` permissions are required to install, run, or remove this plugin. All network requests and cached data operate strictly within standard user space (`~/.cache/omaxfordlearners/`).
+> **No Root Privileges Required**: No elevated administrative permissions are required to install, run, or remove this plugin. All network requests and cached data operate strictly within standard user space (`~/.cache/omaxfordlearners/`).
 
 ---
 

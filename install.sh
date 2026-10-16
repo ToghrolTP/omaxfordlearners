@@ -74,7 +74,7 @@ check_prerequisites() {
 
   if ! command -v mpv &>/dev/null; then
     log_warn "mpv is not installed. Native pronunciation audio playback requires mpv."
-    log_info "Install with your package manager (e.g. pacman -S mpv)"
+    log_info "Install mpv with your system package manager for pronunciation audio."
   else
     log_ok "Audio playback backend found (mpv)"
   fi
