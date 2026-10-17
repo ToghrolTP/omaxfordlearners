@@ -49,7 +49,8 @@ if [[ "${1:-}" == "--clipboard" ]]; then
   if printf '%s' "$CLIP" | LC_ALL=C grep -q '[^[:print:][:space:]]'; then
     CLIP=""
   fi
-  CLIP="$(printf '%s' "$CLIP" | head -n 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+  # Strip HTML markup, angle brackets, and normalize whitespace
+  CLIP="$(printf '%s' "$CLIP" | sed -E 's/<[^>]*>/ /g; s/[<>]//g' | head -n 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
   if [ ${#CLIP} -gt 64 ]; then
     CLIP=""
   fi
@@ -67,7 +68,7 @@ if [[ -n "${1:-}" && "${1:-}" != "--overlay" && "${1:-}" != "--bar" ]]; then
   if printf '%s' "$RAW_WORD" | LC_ALL=C grep -q '[^[:print:][:space:]]'; then
     RAW_WORD=""
   fi
-  WORD="$(printf '%s' "$RAW_WORD" | head -n 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | cut -c1-64)"
+  WORD="$(printf '%s' "$RAW_WORD" | sed -E 's/<[^>]*>/ /g; s/[<>]//g' | head -n 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | cut -c1-64)"
 
   if [[ -n "$WORD" ]]; then
     # Try IPC to bar widget first if open

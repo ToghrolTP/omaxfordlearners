@@ -122,12 +122,28 @@ class TestOxfordLookup(unittest.TestCase):
         self.assertFalse(oxford_lookup.is_valid_term("---"))
         self.assertFalse(oxford_lookup.is_valid_term("line1\nline2"))
 
+        # Reject HTML tags and angle brackets
+        self.assertFalse(oxford_lookup.is_valid_term("<img src=\"http://attacker.com/leak\">"))
+        self.assertFalse(oxford_lookup.is_valid_term("word<img src=\"http://attacker.com/leak\">"))
+        self.assertFalse(oxford_lookup.is_valid_term("<script>alert(1)</script>"))
+        self.assertFalse(oxford_lookup.is_valid_term("<p>test</p>"))
+
     def test_lookup_word_binary_and_invalid(self):
         binary_data = "\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x04\x00"
         result = oxford_lookup.lookup_word(binary_data, use_cache=True, cache_dir=self.test_dir)
         self.assertFalse(result["found"])
         self.assertIn("Invalid search term", result["error"])
         self.assertEqual(result["suggestions"], [])
+
+    def test_lookup_word_html_markup_sanitized(self):
+        html_markup = "<img src=\"https://attacker.site/track.png\">"
+        result = oxford_lookup.lookup_word(html_markup, use_cache=True, cache_dir=self.test_dir)
+        self.assertFalse(result["found"])
+        self.assertIn("Invalid search term", result["error"])
+        # Ensure term has zero HTML markup or angle brackets
+        self.assertNotIn("<", result["term"])
+        self.assertNotIn(">", result["term"])
+        self.assertNotIn("img", result["term"])
 
 
 if __name__ == "__main__":

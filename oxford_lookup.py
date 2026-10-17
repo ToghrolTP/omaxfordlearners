@@ -103,7 +103,7 @@ def parse_dictionary_html(html_content, term):
 
         return {
             "found": False,
-            "term": term,
+            "term": clean_text(term).replace("<", "").replace(">", ""),
             "error": "Word not found",
             "suggestions": clean_suggestions
         }
@@ -210,7 +210,7 @@ def fetch_oxford_html(term):
 
 
 def is_valid_term(term):
-    """Check if term is a plausible dictionary word and not binary or garbage."""
+    """Check if term is a plausible dictionary word and not binary, markup, or garbage."""
     if not term or len(term) > 80:
         return False
     # Check for surrogates (e.g. invalid bytes decoded by surrogateescape)
@@ -220,6 +220,9 @@ def is_valid_term(term):
     if any(ord(c) < 32 and c not in " \t" for c in term):
         return False
     if "\ufffd" in term or "\x00" in term:
+        return False
+    # Reject HTML angle brackets or tag-like structures
+    if "<" in term or ">" in term:
         return False
     # Check common binary file signatures
     if term.startswith(("\x89PNG", "GIF8", "%PDF", "\x7fELF", "PK\x03\x04")):
@@ -237,7 +240,9 @@ def lookup_word(term, use_cache=True, cache_dir=None):
         return {"found": False, "term": "", "error": "No word provided."}
 
     if not is_valid_term(term):
-        preview = term[:24] + ("…" if len(term) > 24 else "")
+        preview = clean_text(term)
+        preview = re.sub(r"[<>]", "", preview)
+        preview = preview[:24] + ("…" if len(preview) > 24 else "")
         safe_preview = "".join(
             c if (32 <= ord(c) < 0xD800 or 0xDFFF < ord(c) <= 0x10FFFF) else "?"
             for c in preview

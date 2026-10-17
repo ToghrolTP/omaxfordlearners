@@ -121,6 +121,7 @@ Column {
       topPadding: Style.space(2)
 
       Text {
+        textFormat: Text.PlainText
         text: "Recent:"
         color: Qt.darker(root.foreground, 1.4)
         font.family: root.fontFamily
@@ -190,6 +191,7 @@ Column {
           spacing: Style.space(8)
 
           Text {
+            textFormat: Text.PlainText
             text: Model.GLYPH_SEARCH
             color: root.accentColor
             font.family: root.fontFamily
@@ -198,6 +200,7 @@ Column {
           }
 
           Text {
+            textFormat: Text.PlainText
             text: "Looking up definition..."
             color: root.foreground
             font.family: root.fontFamily
@@ -216,12 +219,14 @@ Column {
         Row {
           spacing: Style.space(6)
           Text {
+            textFormat: Text.PlainText
             text: Model.GLYPH_LIGHTBULB
             color: Color.urgent
             font.family: root.fontFamily
             font.pixelSize: Style.font.title
           }
           Text {
+            textFormat: Text.PlainText
             text: "No match for \"" + (service.currentResult ? service.currentResult.term : "") + "\""
             color: root.foreground
             font.family: root.fontFamily
@@ -231,6 +236,7 @@ Column {
         }
 
         Text {
+          textFormat: Text.PlainText
           visible: Boolean(service && service.currentResult && service.currentResult.suggestions && service.currentResult.suggestions.length > 0)
           text: "Did you mean:"
           color: Qt.darker(root.foreground, 1.3)
@@ -270,6 +276,7 @@ Column {
           spacing: Style.space(12)
 
           Text {
+            textFormat: Text.PlainText
             text: (service && service.currentResult && service.currentResult.term) || ""
             color: root.foreground
             font.family: root.fontFamily
@@ -290,6 +297,7 @@ Column {
 
             Text {
               id: posText
+              textFormat: Text.PlainText
               anchors.centerIn: parent
               text: Model.formatPos(service.currentResult ? service.currentResult.pos : "")
               color: root.accentColor
@@ -326,6 +334,7 @@ Column {
             }
 
             Text {
+              textFormat: Text.PlainText
               text: (service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.uk && service.currentResult.pronunciation.uk.phonetic) || ""
               color: Qt.darker(root.foreground, 1.25)
               font.family: root.fontFamily
@@ -355,6 +364,7 @@ Column {
             }
 
             Text {
+              textFormat: Text.PlainText
               text: (service && service.currentResult && service.currentResult.pronunciation && service.currentResult.pronunciation.us && service.currentResult.pronunciation.us.phonetic) || ""
               color: Qt.darker(root.foreground, 1.25)
               font.family: root.fontFamily
@@ -393,6 +403,7 @@ Column {
                   color: Qt.rgba(root.accentColor.r, root.accentColor.g, root.accentColor.b, 0.12)
 
                   Text {
+                    textFormat: Text.PlainText
                     anchors.centerIn: parent
                     text: String(index + 1)
                     color: root.accentColor
@@ -412,6 +423,7 @@ Column {
 
                   Text {
                     id: gramText
+                    textFormat: Text.PlainText
                     anchors.centerIn: parent
                     text: modelData.grammar || ""
                     color: Qt.darker(root.foreground, 1.25)
@@ -421,6 +433,7 @@ Column {
                 }
 
                 Text {
+                  textFormat: Text.PlainText
                   Layout.fillWidth: true
                   Layout.alignment: Qt.AlignTop
                   text: modelData.definition || ""
@@ -454,6 +467,7 @@ Column {
                     }
 
                     Text {
+                      textFormat: Text.PlainText
                       Layout.fillWidth: true
                       text: "“" + modelData + "”"
                       color: Qt.darker(root.foreground, 1.25)
@@ -483,6 +497,7 @@ Column {
           Row {
             spacing: Style.space(8)
             Text {
+              textFormat: Text.PlainText
               text: Model.GLYPH_ORIGIN
               color: root.accentColor
               font.family: root.fontFamily
@@ -490,6 +505,7 @@ Column {
               anchors.verticalCenter: parent.verticalCenter
             }
             Text {
+              textFormat: Text.PlainText
               text: "Word Origin"
               color: root.foreground
               font.family: root.fontFamily
@@ -509,6 +525,7 @@ Column {
 
             Text {
               id: originText
+              textFormat: Text.PlainText
               anchors.fill: parent
               anchors.margins: Style.space(10)
               text: (service && service.currentResult && service.currentResult.word_origin) || ""
@@ -536,6 +553,7 @@ Column {
         Item { height: Style.space(20); width: 1 }
 
         Text {
+          textFormat: Text.PlainText
           anchors.horizontalCenter: parent.horizontalCenter
           text: Model.GLYPH_WARN
           font.family: root.fontFamily
@@ -544,6 +562,7 @@ Column {
         }
 
         Text {
+          textFormat: Text.PlainText
           anchors.horizontalCenter: parent.horizontalCenter
           text: service ? service.error : "Error"
           font.family: root.fontFamily
@@ -563,6 +582,7 @@ Column {
         Item { height: Style.space(20); width: 1 }
 
         Text {
+          textFormat: Text.PlainText
           anchors.horizontalCenter: parent.horizontalCenter
           text: Model.GLYPH_BOOK
           font.family: root.fontFamily
@@ -571,6 +591,7 @@ Column {
         }
 
         Text {
+          textFormat: Text.PlainText
           anchors.horizontalCenter: parent.horizontalCenter
           text: "Oxford Learner's Dictionary"
           font.family: root.fontFamily
@@ -580,6 +601,7 @@ Column {
         }
 
         Text {
+          textFormat: Text.PlainText
           anchors.horizontalCenter: parent.horizontalCenter
           text: "Search definitions, British & American pronunciation, and examples."
           font.family: root.fontFamily
@@ -592,6 +614,7 @@ Column {
           spacing: Style.space(12)
 
           Text {
+            textFormat: Text.PlainText
             text: "↵ Enter to search"
             font.family: root.fontFamily
             font.pixelSize: Style.font.caption
@@ -599,6 +622,7 @@ Column {
           }
 
           Text {
+            textFormat: Text.PlainText
             text: "Esc to close"
             font.family: root.fontFamily
             font.pixelSize: Style.font.caption
